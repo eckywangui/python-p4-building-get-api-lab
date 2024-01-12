@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-
-from flask import Flask, make_response, jsonify
+from flask import Flask, jsonify
 from flask_migrate import Migrate
 
 from models import db, Bakery, BakedGood
@@ -20,19 +18,26 @@ def index():
 
 @app.route('/bakeries')
 def bakeries():
-    return ''
+    bakeries = [bakery.to_dict() for bakery in Bakery.query.all()]
+    return jsonify(bakeries), 200
 
 @app.route('/bakeries/<int:id>')
 def bakery_by_id(id):
-    return ''
+    bakery = Bakery.query.filter_by(id=id).first()
+    bakery_serialized = bakery.to_dict()
+    return jsonify(bakery_serialized), 200
 
 @app.route('/baked_goods/by_price')
 def baked_goods_by_price():
-    return ''
+    baked_goods_by_price = BakedGood.query.order_by(BakedGood.price.desc()).all()
+    baked_goods_by_price_serialized = [bg.to_dict() for bg in baked_goods_by_price]
+    return jsonify(baked_goods_by_price_serialized), 200
 
 @app.route('/baked_goods/most_expensive')
 def most_expensive_baked_good():
-    return ''
+    most_expensive_baked_good = BakedGood.query.order_by(BakedGood.price.desc()).limit(1).first()
+    most_expensive_baked_good_serialized = most_expensive_baked_good.to_dict()
+    return jsonify(most_expensive_baked_good_serialized), 200
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
